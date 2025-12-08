@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>软件工程重要研究问题</title>
+
+    <style>
+      :root {
+        /* 主题色与布局 */
+        --bg: #ffffff;
+        --panel: #f7f9fc;
+        --card: #ffffff;
+        --border: #e3e8ef;
+        --radius: 8px;
+        --maxwidth: 1100px;
+        --font-sans: "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
+        --font-serif: "Noto Serif SC", serif;
+
+        /* 统一的颜色与字体尺寸变量（方便整体修改） */
+        --title-color: #004a9f; /* 全局标题色 */
+        --text-color: #0e3b78; /* 全局正文色（蓝） */
+        --muted: #666666;
+
+        /* 统一尺寸：要点要求：标题 26px、文本 20px */
+        --title-size: 30px;
+        --text-size: 28px;
+        --sidebar-font-size: 30px;
+
+        --footer-h: 50px;
+        --sidebar-width: 300px;
+        --maxwidth: 1350px;
+      }
+
+      /* 全局重置与基础 */
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text-color);
+        font-family: var(--font-sans);
+        padding-bottom: var(--footer-h);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      header.top-header {
+        width: 100%;
+        text-align: center;
+        padding: 28px 16px 18px;
+        background: var(--bg);
+      }
+      .header {
+        font-family: var(--font-serif);
+        font-size: calc(var(--title-size) * 1.2);
+        font-weight: 800;
+        color: var(--title-color);
+        margin: 0;
+      }
+
+      /* 布局 */
+      .page {
+        display: flex;
+        justify-content: center;
+        padding: 20px 20px 40px;
+      }
+      .shell {
+        max-width: var(--maxwidth);
+        width: 100%;
+        display: grid;
+        /* grid-template-columns: 230px 1fr; */
+        gap: 24px;
+        box-sizing: border-box;
+        grid-template-columns: var(--sidebar-width) 1fr;
+      }
+
+      /* 左侧 */
+      .sidebar {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        padding: 18px;
+        border-radius: var(--radius);
+      }
+      .nav-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: var(--sidebar-font-size);
+        color: var(--title-color);
+      }
+      .nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .nav-btn {
+        width: 100%;
+        padding: 10px 12px;
+        font-size: var(--sidebar-font-size);
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        text-align: left;
+        cursor: pointer;
+        transition: 0.15s;
+        color: var(--text-color);
+      }
+      .nav-btn:hover {
+        background: #e9f0fb;
+      }
+      .nav-btn.active {
+        background: #d6e9ff;
+        border-color: #1e90ff;
+      }
+
+      /* 子菜单 — 保留类以便复用 */
+      .sub-list {
+        list-style: none;
+        padding-left: 8px;
+        margin-top: 8px;
+        display: none;
+      }
+      .sub-list.show {
+        display: block;
+      }
+
+      /* 栏目侧边子项样式（跟随主样式：字体与大小保持一致，并下划线） */
+      .nav-sub {
+        display: block;
+        padding: 8px 10px;
+        font-size: 25px; /* 保持整体风格大小一致 */
+        color: var(--text-color);
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        border-radius: 6px;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        text-align: left;
+      }
+      .nav-sub:hover {
+        background: #eef6ff;
+        color: var(--title-color);
+      }
+
+      /* 右侧卡片 */
+      .card {
+        background: var(--card);
+        padding: 16px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-sizing: border-box;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      img.auto-img {
+        max-width: 100%;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        display: block;
+      }
+
+      footer.footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: var(--footer-h);
+        background: var(--panel);
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        color: #555;
+      }
+
+      @media (max-width: 900px) {
+        :root {
+          --sidebar-width: 100%;
+        }
+        .shell {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ===========================
+         Template (proposal template)
+         =========================== */
+      .proposal-template {
+        display: flex;
+        gap: 28px;
+        align-items: flex-start;
+        padding: 18px;
+        box-sizing: border-box;
+      }
+      .pt-left {
+        flex: 1 1 60%;
+        min-width: 280px;
+      }
+      .pt-title {
+        font-family: var(--font-serif);
+        font-size: var(--title-size); /* 26px */
+        color: var(--title-color);
+        font-weight: 800;
+        margin: 6px 0 14px;
+      }
+      .pt-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        counter-reset: item;
+      }
+      .pt-list > li {
+        display: block;
+        margin-bottom: 14px;
+      }
+      .pt-list > li::before {
+        counter-increment: item;
+        content: counter(item) ".";
+        font-weight: 800;
+        font-size: 18px;
+        color: var(--title-color);
+        display: inline-block;
+        width: 36px;
+        margin-right: 8px;
+      }
+      .pt-item-title {
+        display: inline-block;
+        font-weight: 700;
+        color: var(--title-color);
+        font-size: calc(var(--title-size) * 0.95);
+        margin-bottom: 6px;
+      }
+      .pt-item-body {
+        color: var(--text-color);
+        font-size: var(--text-size);
+        line-height: 1.6;
+        margin-top: 6px;
+      }
+
+      .pt-right {
+        flex: 0 0 30%;
+        position: relative;
+        min-width: 180px;
+        height: 220px;
+      }
+      .decor-top,
+      .decor-bottom {
+        position: absolute;
+        background: linear-gradient(
+          180deg,
+          rgba(3, 60, 115, 0.06),
+          rgba(3, 60, 115, 0.03)
+        );
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(3, 60, 115, 0.04);
+      }
+      .decor-top {
+        width: 120px;
+        height: 50px;
+        top: -8px;
+        left: 6%;
+        transform: rotate(-18deg);
+        clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+      }
+      .decor-bottom {
+        width: 220px;
+        height: 140px;
+        bottom: -8px;
+        right: 6%;
+        transform: rotate(12deg);
+        clip-path: polygon(0 10%, 100% 0, 100% 85%, 10% 100%);
+      }
+
+      @media (max-width: 900px) {
+        .proposal-template {
+          flex-direction: column;
+        }
+        .pt-right {
+          width: 100%;
+          height: 120px;
+          order: 2;
+        }
+        .pt-left {
+          order: 1;
+        }
+        .pt-title {
+          font-size: calc(var(--title-size) * 0.95);
+        }
+        .pt-item-body {
+          font-size: calc(var(--text-size) * 0.95);
+        }
+      }
+
+      /* ===========================
+         Timeline
+         =========================== */
+      .timeline-container {
+        position: relative;
+        width: 100%;
+        padding: 32px 12px 36px;
+        box-sizing: border-box;
+        min-height: 260px;
+      }
+      .timeline-title {
+        text-align: center;
+        font-size: calc(var(--title-size) * 1.05);
+        font-weight: 800;
+        color: var(--title-color);
+        margin-bottom: 18px;
+      }
+
+      /* 主线 */
+      .timeline-line {
+        position: absolute;
+        left: 5%;
+        right: 5%;
+        height: 6px;
+        background: #d0d3d8;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 4px;
+        z-index: 1;
+      }
+
+      /* 节点容器：均匀分配节点 */
+      .timeline-items {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 0 5%;
+        margin-top: 12px;
+        box-sizing: border-box;
+        position: relative;
+      }
+
+      .timeline-item {
+        position: relative;
+        flex: 1 1 0;
+        min-width: 80px;
+        max-width: 16%;
+        text-align: center;
+        box-sizing: border-box;
+      }
+
+      /* 节点外形 */
+      .timeline-node {
+        width: 84px;
+        height: 76px;
+        background: var(--title-color);
+        color: #fff;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+      }
+
+      /* 连接线：从节点到说明框（利用伪元素） */
+      .timeline-item .timeline-node::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        width: 2px;
+        height: 12px;
+        background: var(--title-color);
+        transform: translateX(-50%);
+        z-index: 2;
+      }
+
+      /* 说明卡片 */
+      .timeline-box {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 240px;
+        max-width: 28vw;
+        min-width: 180px;
+        padding: 10px 14px;
+        border-radius: 6px;
+        background: #ffe08a;
+        color: #222;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        z-index: 2;
+        box-sizing: border-box;
+      }
+      .timeline-box-top {
+        bottom: calc(50% + 44px);
+        text-align: center;
+      } /* 放在节点上方 */
+      .timeline-box-bottom {
+        top: calc(50% + 44px);
+        text-align: left;
+      } /* 放在节点下方 */
+
+      /* 给说明卡片也画一条从卡片到节点的短线（伪元素），增强可读性 */
+      .timeline-box::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        width: 10px;
+        height: 4px;
+        transform: translateX(-50%);
+        background: transparent;
+      }
+
+      /* 小屏幕改为垂直堆叠，隐藏主线 */
+      @media (max-width: 900px) {
+        .timeline-line {
+          display: none;
+        }
+        .timeline-items {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 28px;
+          padding: 0 6%;
+        }
+        .timeline-item {
+          text-align: left;
+          padding-left: 48px;
+          min-height: 64px;
+        }
+        .timeline-node {
+          position: absolute;
+          left: 6%;
+          top: 6px;
+          transform: none;
+          width: 56px;
+          height: 44px;
+          font-size: 12px;
+        }
+        .timeline-node::after {
+          display: none;
+        }
+        .timeline-box {
+          position: relative;
+          left: 0;
+          transform: none;
+          max-width: 100%;
+          min-width: 0;
+          padding-left: 12px;
+          padding-right: 12px;
+        }
+        .timeline-box-top,
+        .timeline-box-bottom {
+          top: auto;
+          bottom: auto;
+          text-align: left;
+        }
+      }
+
+      /* ===========================
+         Issue slides (important problems)
+         =========================== */
+      .issue-slide {
+        position: relative;
+        overflow: visible;
+        padding: 28px 34px;
+        box-sizing: border-box;
+        min-height: 300px;
+        background: var(--card);
+      }
+      .issue-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+      }
+      .issue-title {
+        font-family: var(--font-serif);
+        color: var(--title-color);
+        font-size: var(--title-size);
+        margin: 6px 0 10px;
+        font-weight: 900;
+      }
+      .issue-subtitle {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        font-size: calc(var(--title-size) * 0.95);
+        color: var(--title-color);
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .issue-subtitle .label {
+        font-weight: 1000;
+        min-width: 100px;
+        flex-shrink: 0;
+      }
+      .subtitle-text {
+        text-decoration: underline;
+        text-underline-offset: 6px;
+      }
+      .issue-body p {
+        font-size: var(--text-size);
+        line-height: 1.8;
+        color: var(--text-color);
+        margin: 6px 0 22px;
+      }
+      .issue-authors {
+        font-size: var(--text-size);
+        color: var(--text-color);
+        font-weight: 800;
+        text-align: right;
+        margin-top: 20px;
+        padding-right: 6px;
+      }
+
+      .issue-decor {
+        position: absolute;
+        z-index: 1;
+        background: linear-gradient(
+          180deg,
+          rgba(3, 60, 115, 0.06),
+          rgba(3, 60, 115, 0.02)
+        );
+        border-radius: 6px;
+        box-shadow: 0 10px 20px rgba(3, 60, 115, 0.03);
+      }
+      .decor-top-left {
+        width: 120px;
+        height: 120px;
+        top: 8px;
+        left: 8px;
+        transform: rotate(-18deg);
+        clip-path: polygon(10% 0, 100% 0, 100% 30%, 70% 100%, 0 80%);
+      }
+      .decor-bottom-right {
+        width: 200px;
+        height: 200px;
+        right: 18px;
+        bottom: 18px;
+        transform: rotate(12deg);
+        clip-path: polygon(0 10%, 85% 0, 100% 85%, 18% 100%);
+      }
+
+      @media (max-width: 900px) {
+        .issue-title {
+          font-size: calc(var(--title-size) * 0.95);
+        }
+        .issue-subtitle {
+          font-size: calc(var(--title-size) * 0.85);
+          flex-wrap: wrap;
+        }
+        .issue-body p {
+          font-size: calc(var(--text-size) * 0.95);
+          line-height: 1.6;
+        }
+        .issue-authors {
+          font-size: calc(var(--text-size) * 0.9);
+          text-align: left;
+        }
+        .decor-top-left,
+        .decor-bottom-right {
+          display: none;
+        }
+      }
+
+      /* ===========================
+         组织与流程容器（3:1布局）
+         =========================== */
+      .process-container {
+        display: flex;
+        gap: 24px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .timeline-card {
+        flex: 3; /* 3份宽度 */
+        min-width: 0; /* 防止溢出 */
+      }
+
+      .team-card {
+        flex: 1; /* 1份宽度 */
+        min-width: 0;
+        background: linear-gradient(135deg, #f8faff 0%, #e9f2ff 100%);
+        border-left: 4px solid #1a6bb3;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        height: fit-content;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+
+      .team-header {
+        text-align: center;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid rgba(26, 107, 179, 0.2);
+      }
+
+      .team-title {
+        font-family: var(--font-serif);
+        font-size: calc(var(--title-size) * 0.9);
+        font-weight: 800;
+        color: var(--title-color);
+        margin: 0 0 8px 0;
+      }
+
+      .team-subtitle {
+        font-size: calc(var(--text-size) * 0.75);
+        color: var(--text-color);
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .members-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .member-item {
+        padding: 16px 12px;
+        border-bottom: 1px solid rgba(26, 107, 179, 0.1);
+        font-size: calc(var(--text-size) * 0.85);
+        display: flex;
+        align-items: center;
+        transition: all 0.2s ease;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        background: rgba(255, 255, 255, 0.8);
+      }
+
+      .member-item:hover {
+        background: #e6f0ff;
+        transform: translateX(3px);
+      }
+
+      .member-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+
+      .member-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, #1a6bb3 0%, #0d4a8a 100%);
+        color: white;
+        border-radius: 50%;
+        font-weight: 700;
+        margin-right: 16px;
+        font-size: calc(var(--text-size) * 0.7);
+        flex-shrink: 0;
+      }
+
+      .member-name {
+        font-size: calc(var(--text-size) * 0.85);
+        color: var(--text-color);
+        font-weight: 600;
+      }
+
+      .team-footer {
+        margin-top: auto;
+        padding-top: 16px;
+        text-align: center;
+        font-size: calc(var(--text-size) * 0.7);
+        color: #666;
+        border-top: 1px solid rgba(26, 107, 179, 0.1);
+      }
+
+      @media (max-width: 768px) {
+        .process-container {
+          flex-direction: column;
+        }
+
+        .timeline-card,
+        .team-card {
+          flex: none;
+          width: 100%;
+        }
+
+        .team-card {
+          order: 2;
+          margin-top: 24px;
+        }
+
+        .timeline-card {
+          order: 1;
+        }
+      }
+
+      /* Published list styling */
+      /* 修改已发布列表的样式，添加数字标记和圆圈 */
+      .published-list {
+        list-style: none;
+        padding: 12px 4px;
+        margin: 0;
+        counter-reset: published-counter; /* 创建计数器 */
+      }
+
+      .published-list li {
+        position: relative;
+        padding: 14px 12px 14px 60px; /* 左侧增加内边距给圆圈留空间 */
+        border-bottom: 1px solid var(--border);
+        font-size: 30px;
+        min-height: 60px; /* 确保圆圈有足够空间 */
+        display: flex;
+        align-items: center;
+      }
+
+      /* 圆圈样式 */
+      .published-list li::before {
+        counter-increment: published-counter; /* 递增计数器 */
+        content: counter(published-counter); /* 显示计数器值 */
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px; /* 圆圈大小 */
+        height: 44px;
+        background-color: var(--title-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 22px;
+        box-shadow: 0 4px 8px rgba(0, 74, 159, 0.2);
+        z-index: 1;
+      }
+
+      /* 可选：添加圆圈背景光晕效果 */
+      .published-list li::after {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 52px;
+        height: 52px;
+        background: rgba(0, 74, 159, 0.1);
+        border-radius: 50%;
+        z-index: 0;
+      }
+
+      .published-list li a {
+        color: var(--text-color);
+        text-decoration: none;
+        font-weight: 700;
+        display: block;
+        width: 100%;
+        transition: all 0.2s ease;
+        padding: 4px 0;
+      }
+
+      .published-list li a:hover {
+        text-decoration: underline;
+        color: var(--title-color);
+        transform: translateX(4px);
+      }
+      /* Published hero (replaces image) */
+      .published-hero {
+        margin-bottom: 18px;
+        padding: 20px;
+        border-radius: 8px;
+        background: linear-gradient(
+          90deg,
+          rgba(3, 60, 115, 0.06),
+          rgba(3, 60, 115, 0.02)
+        );
+        border: 1px solid rgba(3, 60, 115, 0.06);
+        font-family: var(--font-serif);
+        color: var(--title-color);
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.4;
+        text-align: center;
+      }
+
+      /* 调整移动端样式 */
+      @media (max-width: 900px) {
+        .published-list li {
+          font-size: 26px;
+          padding-left: 56px;
+        }
+
+        .published-list li::before {
+          width: 40px;
+          height: 40px;
+          font-size: 20px;
+        }
+
+        .published-list li::after {
+          width: 48px;
+          height: 48px;
+        }
+      }
+
+      /* ===== Back button & breadcrumb for issue pages ===== */
+      .issue-topbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        background: #ffffff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--title-color);
+        box-shadow: 0 6px 14px rgba(3, 60, 115, 0.04);
+      }
+      .back-btn:hover {
+        transform: translateY(-1px);
+      }
+      .back-icon {
+        width: 14px;
+        height: 14px;
+        display: inline-block;
+        border-left: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: rotate(45deg);
+        margin-right: 2px;
+      }
+      .breadcrumb {
+        font-size: 15px;
+        color: var(--text-color);
+        opacity: 0.95;
+      }
+      .breadcrumb a {
+        color: var(--text-color);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .breadcrumb a:hover {
+        color: var(--title-color);
+        text-decoration: underline;
+      }
+      .breadcrumb .sep {
+        color: rgba(0, 0, 0, 0.12);
+        margin: 0 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="top-header">
+      <div class="header">“软件工程重要研究问题”征集与发布</div>
+    </header>
+
+    <div class="page">
+      <div class="shell">
+        <!-- 左侧导航 -->
+        <aside class="sidebar" aria-label="页面目录">
+          <div class="nav-title">目录</div>
+          <ul class="nav-list">
+            <li>
+              <button class="nav-btn" data-key="motivation">背景与动机</button>
+            </li>
+            <li>
+              <button class="nav-btn" data-key="process">组织与流程</button>
+            </li>
+            <li>
+              <button class="nav-btn" data-key="template">
+                模板与联系方式
+              </button>
+            </li>
+            <!-- 已发布重要问题：展开子目录 -->
+            <li>
+              <button
+                class="nav-btn"
+                data-key="published"
+                id="publishedBtn"
+                aria-expanded="false"
+                aria-controls="publishedSublist"
+              >
+                已发布重要问题
+              </button>
+              <ul
+                id="publishedSublist"
+                class="sub-list"
+                role="menu"
+                aria-label="已发布重要问题列表（侧边）"
+              >
+                <!-- JS 动态填充：每一项为 issues 的 title -->
+                <li
+                  style="color: var(--muted); padding: 6px 8px; font-size: 16px"
+                >
+                  正在加载……
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </aside>
+
+        <!-- 右侧内容区 -->
+        <main id="mainContent" aria-live="polite">
+          <!-- 默认视图 -->
+          <section id="defaultView" class="card" aria-labelledby="navDefault">
+            <h3 id="navDefault" class="sr-only">默认视图</h3>
+            <img
+              src="./src/defaultView.png"
+              class="auto-img"
+              alt="defaultView"
+            />
+          </section>
+
+          <!-- 背景与动机 -->
+          <section
+            id="motivation"
+            class="card"
+            style="display: none"
+            aria-labelledby="navMotivation"
+          >
+            <h3 id="navMotivation" class="sr-only">背景与动机</h3>
+
+            <div
+              style="
+                padding: 20px 10px;
+                color: var(--text-color);
+                font-family: var(--font-sans);
+              "
+            >
+              <div style="display: flex; gap: 12px; margin-bottom: 14px">
+                <div
+                  style="
+                    width: 12px;
+                    height: 12px;
+                    background: var(--title-color);
+                    margin-top: 6px;
+                    border-radius: 2px;
+                  "
+                ></div>
+                <div style="line-height: 1.6">
+                  <div
+                    style="
+                      font-weight: 700;
+                      color: var(--title-color);
+                      margin-bottom: 6px;
+                      font-size: calc(var(--title-size));
+                    "
+                  >
+                    工作动机
+                  </div>
+                  <div style="font-size: var(--text-size)">
+                    凸显学术组织定位，凝聚引导学界共识
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 12px; margin-bottom: 14px">
+                <div
+                  style="
+                    width: 12px;
+                    height: 12px;
+                    background: var(--title-color);
+                    margin-top: 6px;
+                    border-radius: 2px;
+                  "
+                ></div>
+                <div style="line-height: 1.6">
+                  <div
+                    style="
+                      font-weight: 700;
+                      color: var(--title-color);
+                      margin-bottom: 6px;
+                      font-size: calc(var(--title-size));
+                    "
+                  >
+                    机制流程
+                  </div>
+                  <div style="font-size: var(--text-size)">
+                    公开征集，反复论证，分批发布
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 12px">
+                <div
+                  style="
+                    width: 12px;
+                    height: 12px;
+                    background: var(--title-color);
+                    margin-top: 6px;
+                    border-radius: 2px;
+                  "
+                ></div>
+                <div style="line-height: 1.6">
+                  <div
+                    style="
+                      font-weight: 700;
+                      color: var(--title-color);
+                      margin-bottom: 6px;
+                      font-size: calc(var(--title-size));
+                    "
+                  >
+                    目标效果
+                  </div>
+                  <div style="font-size: var(--text-size)">
+                    推动政企支持，推动社区发展
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <img
+              src="./src/background.png"
+              class="auto-img"
+              alt="background"
+              style="max-width: 90%; margin: 0 auto"
+            />
+          </section>
+
+          <!-- 组织与流程（时间线 + 首届工作组） -->
+          <section
+            id="process"
+            class="card"
+            style="display: none; padding: 0"
+            aria-labelledby="navProcess"
+          >
+            <h3 id="navProcess" class="sr-only">组织与流程</h3>
+
+            <div class="process-container">
+              <!-- 左侧首届工作组部分 (1/4宽度) -->
+              <div class="team-card">
+                <div class="team-header">
+                  <h2 class="team-title">首届工作组</h2>
+                  <p class="team-subtitle">工作组成员名单</p>
+                </div>
+
+                <ul class="members-list">
+                  <li class="member-item">
+                    <span class="member-number">1</span>
+                    <span class="member-name">李宣东</span>
+                  </li>
+                  <li class="member-item">
+                    <span class="member-number">2</span>
+                    <span class="member-name">张东梅</span>
+                  </li>
+                  <li class="member-item">
+                    <span class="member-number">3</span>
+                    <span class="member-name">李戈</span>
+                  </li>
+                  <li class="member-item">
+                    <span class="member-number">4</span>
+                    <span class="member-name">夏鑫</span>
+                  </li>
+                  <li class="member-item">
+                    <span class="member-number">5</span>
+                    <span class="member-name">刘辉</span>
+                  </li>
+                  <li class="member-item">
+                    <span class="member-number">6</span>
+                    <span class="member-name">马晓星</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- 右侧时间线部分 (3/4宽度) -->
+              <div class="timeline-card">
+                <img
+                  src="./src/timeline.png"
+                  class="auto-img"
+                  alt="timeline"
+                  style="margin: 0; border-radius: 0"
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- 模板 -->
+          <section
+            id="template"
+            class="card"
+            style="display: none"
+            aria-labelledby="navTemplate"
+          >
+            <h3 id="navTemplate" class="sr-only">模板与联系方式</h3>
+
+            <div class="proposal-template">
+              <div class="pt-left">
+                <h1 class="pt-title">软件工程重要问题提议模版</h1>
+
+                <ol class="pt-list">
+                  <li>
+                    <div class="pt-item-title">问题描述</div>
+                    <div class="pt-item-body">
+                      <p>
+                        <strong>问题表述：</strong
+                        >一句话表述问题。尽量不超过30个字。
+                      </p>
+                      <p>
+                        <strong>解释说明：</strong
+                        >对问题的进一步解释和界定。尽量不超过150字。
+                      </p>
+                      <p>
+                        <strong>研究现状：</strong
+                        >可选，对该问题研究现状的定性或定量说明。尽量不超过100字。
+                      </p>
+                      <p>
+                        <strong>研究目标：</strong
+                        >说明判定该问题研究取得成功或重要进展的标准。尽量不超过150字。
+                      </p>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="pt-item-title">重要意义</div>
+                    <div class="pt-item-body">
+                      对问题重要意义的说明，可分点论述。意义包括学术意义、国家需求、应用价值等一个或多个方面。尽量不超过300字。
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="pt-item-title">示例或相关工作</div>
+                    <div class="pt-item-body">
+                      给出这个问题上的有代表意义的研究示例或相关工作。可分类说明。尽量不超过300字。
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="pt-item-title">参考文献</div>
+                    <div class="pt-item-body">不超过10篇。</div>
+                  </li>
+
+                  <li>
+                    <div class="pt-item-title">【提议人】</div>
+                    <div class="pt-item-body">张三、李四</div>
+                  </li>
+                </ol>
+
+                <!-- 联系方式（新增，联系人标题样式与提案模版标题保持一致） -->
+                <div style="margin-top: 22px">
+                  <!-- <div
+                    class="pt-item-title"
+                    style="display: block; margin-top: 6px"
+                  > -->
+                  <h1 class="pt-title" style="color: crimson">联系人</h1>
+                  <div class="pt-item-body" style="margin-top: 8px">
+                    新提案请通过电子邮件发送给 CCF 软件工程专委秘书处：
+                    <a href="mailto:Liuhui08@bit.edu.cn">Liuhui08@bit.edu.cn</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 已发布重要问题（新的页面） -->
+          <section
+            id="published"
+            class="card"
+            style="display: none"
+            aria-labelledby="navPublished"
+          >
+            <!-- <h3 id="navPublished" class="sr-only">已发布重要问题</h3> -->
+
+            <!-- 顶部改为文字说明（替换原先图片） -->
+            <div class="published-hero" role="img" aria-label="发布说明">
+              CCF 软件工程委员会在 2025 CCF
+              中国软件大会闭幕式上正式发布了三个软件工程重要研究问题
+            </div>
+
+            <!-- 列表容器，JS 动态填充 -->
+            <ul id="publishedList" class="published-list" aria-live="polite">
+              <li style="color: var(--muted)">正在加载已发布问题……</li>
+            </ul>
+          </section>
+
+          <!-- 动态注入的 issue 页面容器（JS 会往 mainContent 中插入 issue-section） -->
+        </main>
+      </div>
+    </div>
+
+    <footer class="footer">© 2025 中国计算机学会 软件工程专业委员会</footer>
+
+    <script>
+      /***********************************************
+       * 动态 Issue 加载与导航（返回仅在页面内重定向到 published）
+       * 修改说明（根据用户要求）：
+       * 1. 侧边栏“已发布重要问题”可展开子目录，子目录项来自 issues.json 的 title。
+       *    子目录字体大小与整体风格保持一致，并添加下划线。
+       * 2. 在模板页面下方添加联系方式，联系人标题与“软件工程重要问题提议模版”同样的样式（已在 HTML 中完成）。
+       * 3. 替换已发布页面顶部图片为指定文字并美观渲染（已在 HTML/CSS 中完成）。
+       ***********************************************/
+
+      const staticSections = [
+        "defaultView",
+        "motivation",
+        "process",
+        "template",
+        "published",
+      ];
+      const dynamicSections = [];
+
+      window.issuesData = null;
+      window.issuesLoaded = false;
+
+      function showSection(id) {
+        if (!id) id = "defaultView";
+        const needsLoad =
+          !window.issuesLoaded &&
+          (id === "published" ||
+            id.startsWith("issue-") ||
+            id.startsWith("issue"));
+        if (needsLoad) {
+          loadIssues()
+            .then(() => {
+              const realId = resolveIssueId(id);
+              // if opening published or issue page, expand sidebar published sublist
+              if (
+                realId === "published" ||
+                (realId && realId.startsWith("issue-"))
+              ) {
+                setPublishedExpanded(true);
+              }
+              performShow(realId);
+            })
+            .catch((err) => {
+              console.error("加载 issues.json 失败：", err);
+              performShow(id);
+            });
+        } else {
+          const realId = resolveIssueId(id);
+          if (
+            realId === "published" ||
+            (realId && realId.startsWith("issue-"))
+          ) {
+            setPublishedExpanded(true);
+          }
+          performShow(realId);
+        }
+      }
+
+      function performShow(id) {
+        const main = document.getElementById("mainContent");
+        const sections = main.querySelectorAll("section");
+        sections.forEach((s) => {
+          try {
+            s.style.display = s.id === id ? "" : "none";
+          } catch (e) {}
+        });
+
+        if (!document.getElementById(id)) {
+          id = "defaultView";
+          const dv = document.getElementById(id);
+          if (dv) dv.style.display = "";
+        }
+
+        document.querySelectorAll(".nav-btn[data-key]").forEach((b) => {
+          b.classList.toggle(
+            "active",
+            b.dataset.key === id ||
+              (id && id.startsWith("issue-") && b.dataset.key === "published")
+          );
+        });
+
+        if (location.hash.slice(1) !== id) {
+          history.replaceState(null, "", "#" + id);
+        }
+
+        try {
+          window.scrollTo && window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch (e) {}
+      }
+
+      function resolveIssueId(requestedId) {
+        if (!requestedId) return "defaultView";
+        if (document.getElementById(requestedId)) return requestedId;
+        if (window.issuesData && Array.isArray(window.issuesData)) {
+          const found = window.issuesData.find((it) => {
+            if (!it) return false;
+            const cand =
+              it._internalId ||
+              (it.id
+                ? "issue-" +
+                  String(it.id)
+                    .toLowerCase()
+                    .replace(/[^\w\-]/g, "-")
+                : null);
+            return (
+              cand === requestedId ||
+              it.id === requestedId ||
+              (it.id && "issue-" + it.id === requestedId)
+            );
+          });
+          if (found) return found._internalId;
+          const idxMatch = requestedId.match(/(\d+)$/);
+          if (idxMatch) {
+            const idx = Number(idxMatch[1]);
+            if (window.issuesData[idx])
+              return window.issuesData[idx]._internalId;
+          }
+        }
+        if (requestedId === "published") return "published";
+        return "defaultView";
+      }
+
+      function loadIssues() {
+        if (window.issuesLoaded) return Promise.resolve(window.issuesData);
+        return fetch("./issues.json", { cache: "no-cache" })
+          .then((r) => {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          })
+          .then((data) => {
+            if (!Array.isArray(data))
+              throw new Error("issues.json 必须为数组格式");
+            window.issuesData = data;
+            renderPublishedList(data);
+            renderPublishedSidebar(data);
+            renderIssuePages(data);
+            window.issuesLoaded = true;
+            return data;
+          });
+      }
+
+      function safeIdForIssue(orig, idx) {
+        if (orig && typeof orig === "string") {
+          const clean = orig
+            .trim()
+            .toLowerCase()
+            .replace(/[^\w\-]/g, "-");
+          if (clean.length > 0) return "issue-" + clean;
+        }
+        return "issue-" + idx;
+      }
+
+      function renderPublishedList(list) {
+        const publishedListEl = document.getElementById("publishedList");
+        publishedListEl.innerHTML = "";
+        if (!list || !list.length) {
+          const li = document.createElement("li");
+          li.textContent = "暂时没有已发布的问题。";
+          publishedListEl.appendChild(li);
+          return;
+        }
+        list.forEach((issue, idx) => {
+          const id = safeIdForIssue(
+            issue.id || issue.title || "issue-" + idx,
+            idx
+          );
+          issue._internalId = id;
+          dynamicSections.push(id);
+
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = "#" + id;
+          a.textContent = issue.title || "问题 " + (idx + 1);
+          a.setAttribute("data-issue-id", id);
+          a.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            showSection(id);
+          });
+          li.appendChild(a);
+          publishedListEl.appendChild(li);
+        });
+      }
+
+      function renderPublishedSidebar(list) {
+        const sublist = document.getElementById("publishedSublist");
+        if (!sublist) return;
+        sublist.innerHTML = "";
+        if (!list || !list.length) {
+          const li = document.createElement("li");
+          li.style.color = "var(--muted)";
+          li.style.padding = "6px 8px";
+          li.textContent = "暂无已发布项";
+          sublist.appendChild(li);
+          return;
+        }
+        list.forEach((issue, idx) => {
+          const id =
+            issue._internalId ||
+            safeIdForIssue(issue.id || issue.title || "issue-" + idx, idx);
+          // ensure internal id stored
+          issue._internalId = id;
+          const li = document.createElement("li");
+          const btn = document.createElement("button");
+          btn.className = "nav-sub";
+          btn.setAttribute("data-issue-id", id);
+          btn.setAttribute("role", "menuitem");
+          btn.textContent = issue.title || "问题 " + (idx + 1);
+          btn.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            showSection(id);
+          });
+          li.appendChild(btn);
+          sublist.appendChild(li);
+        });
+      }
+
+      function createTopbarForIssue(sectionEl, issue) {
+        if (sectionEl.querySelector(".issue-topbar")) return;
+        const topbar = document.createElement("div");
+        topbar.className = "issue-topbar";
+
+        // back button: 强制在页面内重定向到已发布（不使用 history.back）
+        const backBtn = document.createElement("button");
+        backBtn.className = "back-btn";
+        backBtn.setAttribute("aria-label", "返回已发布重要问题列表");
+        backBtn.innerHTML =
+          '<span class="back-icon" aria-hidden="true"></span><span>返回</span>';
+        backBtn.addEventListener("click", (ev) => {
+          ev.preventDefault();
+          // 直接在页面内跳转回 published（不会触发浏览器后退）
+          showSection("published");
+        });
+
+        // breadcrumb
+        const bc = document.createElement("div");
+        bc.className = "breadcrumb";
+        const a = document.createElement("a");
+        a.href = "#published";
+        a.textContent = "已发布重要问题";
+        a.addEventListener("click", (ev) => {
+          ev.preventDefault();
+          showSection("published");
+        });
+        const sep = document.createElement("span");
+        sep.className = "sep";
+        sep.textContent = "›";
+        const titleSpan = document.createElement("span");
+        titleSpan.style.fontWeight = "800";
+        titleSpan.textContent = issue.title || "未命名问题";
+
+        bc.appendChild(a);
+        bc.appendChild(sep);
+        bc.appendChild(titleSpan);
+
+        topbar.appendChild(backBtn);
+        // topbar.appendChild(bc);
+
+        const inner = sectionEl.querySelector(".issue-inner");
+        if (inner) inner.insertBefore(topbar, inner.firstChild);
+        else sectionEl.insertBefore(topbar, sectionEl.firstChild);
+      }
+
+      function renderIssuePages(list) {
+        if (!Array.isArray(list) || !list.length) return;
+        const main = document.getElementById("mainContent");
+        list.forEach((issue, idx) => {
+          const id =
+            issue._internalId ||
+            safeIdForIssue(issue.id || issue.title || "issue-" + idx, idx);
+          if (document.getElementById(id)) return;
+          const section = document.createElement("section");
+          section.id = id;
+          section.className = "card issue-slide";
+          section.style.display = "none";
+          section.setAttribute("aria-labelledby", id + "-label");
+
+          const title = issue.title || "未命名问题";
+          const label = issue.label || "问题表述：";
+          const subtitle = issue.subtitle || issue.tagline || "";
+          const body = issue.body || issue.description || "";
+          const authors = Array.isArray(issue.authors)
+            ? issue.authors
+            : issue.authors
+            ? [issue.authors]
+            : [];
+          const authorsDisplay = authors.length ? authors.join("，") : "";
+
+          section.innerHTML = `
+            <h3 id="${id}-label" class="sr-only">${title}</h3>
+            <div class="issue-decor decor-top-left" aria-hidden="true"></div>
+            <div class="issue-inner">
+              <header class="issue-header">
+                <h1 class="issue-title">${escapeHtml(title)}</h1>
+                <div class="issue-subtitle">
+                  <span class="label">${escapeHtml(label)}</span>
+                  <span class="subtitle-text">${escapeHtml(subtitle)}</span>
+                </div>
+              </header>
+              <article class="issue-body">
+                ${
+                  typeof body === "string" ? `<p>${escapeHtml(body)}</p>` : body
+                }
+              </article>
+              <div class="issue-authors">${escapeHtml(authorsDisplay)}</div>
+            </div>
+            <div class="issue-decor decor-bottom-right" aria-hidden="true"></div>
+          `;
+
+          const publishedEl = document.getElementById("published");
+          if (publishedEl && publishedEl.parentNode) {
+            publishedEl.parentNode.insertBefore(
+              section,
+              publishedEl.nextSibling
+            );
+          } else {
+            main.appendChild(section);
+          }
+
+          createTopbarForIssue(section, issue);
+        });
+      }
+
+      function escapeHtml(str) {
+        if (typeof str !== "string") return str;
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function setPublishedExpanded(expanded) {
+        const publishedBtn = document.getElementById("publishedBtn");
+        const sublist = document.getElementById("publishedSublist");
+        if (!publishedBtn || !sublist) return;
+        if (expanded) {
+          sublist.classList.add("show");
+          publishedBtn.setAttribute("aria-expanded", "true");
+        } else {
+          sublist.classList.remove("show");
+          publishedBtn.setAttribute("aria-expanded", "false");
+        }
+      }
+
+      (function init() {
+        document.querySelectorAll(".nav-btn[data-key]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const key = btn.dataset.key;
+            // Special behavior: if clicking published, toggle sublist visibility as well
+            if (key === "published") {
+              const sublist = document.getElementById("publishedSublist");
+              const isShown = sublist && sublist.classList.contains("show");
+              setPublishedExpanded(!isShown);
+              // Always show the published main page when pressing the parent
+              showSection("published");
+            } else {
+              showSection(key);
+            }
+          });
+        });
+
+        showSection("defaultView");
+
+        // Preload issues (will populate both main published list and sidebar sublist)
+        loadIssues().catch((err) => {
+          console.warn("预加载 issues.json 失败：", err);
+          const publishedListEl = document.getElementById("publishedList");
+          if (publishedListEl && publishedListEl.children.length === 0) {
+            const li = document.createElement("li");
+            li.style.color = "var(--muted)";
+            li.textContent =
+              "无法加载已发布问题（请确保 issues.json 与本页面位于同一目录且为数组格式）。";
+            publishedListEl.appendChild(li);
+          }
+          // Sidebar fallback
+          const sublist = document.getElementById("publishedSublist");
+          if (sublist) {
+            sublist.innerHTML = "";
+            const li = document.createElement("li");
+            li.style.color = "var(--muted)";
+            li.style.padding = "6px 8px";
+            li.textContent = "无法加载侧边已发布项";
+            sublist.appendChild(li);
+          }
+        });
+
+        if (location.hash) {
+          const h = location.hash.slice(1);
+          if (h) showSection(h);
+        }
+
+        const observer = new MutationObserver(() => {
+          const allSections = document.querySelectorAll("main > section");
+          for (const s of allSections) {
+            if (getComputedStyle(s).display !== "none") {
+              if (location.hash.slice(1) !== s.id) {
+                history.replaceState(null, "", "#" + s.id);
+              }
+              break;
+            }
+          }
+        });
+        observer.observe(document.getElementById("mainContent"), {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ["style"],
+        });
+
+        window.addEventListener("hashchange", () => {
+          const h = location.hash.slice(1);
+          if (h) showSection(h);
+        });
+
+        // Escape: 在 issue 页面内回到 published（不使用浏览器后退）
+        window.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" || e.key === "Esc") {
+            const visible = Array.from(
+              document.querySelectorAll("main > section")
+            ).find((s) => getComputedStyle(s).display !== "none");
+            if (visible && visible.id && visible.id.startsWith("issue-")) {
+              showSection("published");
+            }
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
