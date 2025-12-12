@@ -7,7 +7,6 @@
 
     <style>
       :root {
-        /* 主题色与布局 */
         --bg: #ffffff;
         --panel: #f7f9fc;
         --card: #ffffff;
@@ -16,23 +15,20 @@
         --maxwidth: 1100px;
         --font-sans: "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
         --font-serif: "Noto Serif SC", serif;
-
-        /* 统一的颜色与字体尺寸变量（方便整体修改） */
-        --title-color: #004a9f; /* 全局标题色 */
-        --text-color: #0e3b78; /* 全局正文色（蓝） */
+        --title-color: #004a9f;
+        --text-color: #0e3b78;
         --muted: #666666;
-
-        /* 统一尺寸：要点要求：标题 26px、文本 20px */
         --title-size: 30px;
         --text-size: 28px;
         --sidebar-font-size: 30px;
-
         --footer-h: 50px;
         --sidebar-width: 300px;
         --maxwidth: 1350px;
+        /* 列宽（序号列宽度） */
+        --pt-counter-size: 36px;
+        --pt-gap: 12px;
       }
 
-      /* 全局重置与基础 */
       html,
       body {
         margin: 0;
@@ -58,7 +54,6 @@
         margin: 0;
       }
 
-      /* 布局 */
       .page {
         display: flex;
         justify-content: center;
@@ -68,13 +63,11 @@
         max-width: var(--maxwidth);
         width: 100%;
         display: grid;
-        /* grid-template-columns: 230px 1fr; */
         gap: 24px;
         box-sizing: border-box;
         grid-template-columns: var(--sidebar-width) 1fr;
       }
 
-      /* 左侧 */
       .sidebar {
         background: var(--panel);
         border: 1px solid var(--border);
@@ -112,7 +105,6 @@
         border-color: #1e90ff;
       }
 
-      /* 子菜单 — 保留类以便复用 */
       .sub-list {
         list-style: none;
         padding-left: 8px;
@@ -123,11 +115,10 @@
         display: block;
       }
 
-      /* 栏目侧边子项样式（跟随主样式：字体与大小保持一致，并下划线） */
       .nav-sub {
         display: block;
         padding: 8px 10px;
-        font-size: 25px; /* 保持整体风格大小一致 */
+        font-size: 25px;
         color: var(--text-color);
         text-decoration: underline;
         text-underline-offset: 4px;
@@ -142,7 +133,6 @@
         color: var(--title-color);
       }
 
-      /* 右侧卡片 */
       .card {
         background: var(--card);
         padding: 16px;
@@ -192,9 +182,7 @@
         }
       }
 
-      /* ===========================
-         Template (proposal template)
-         =========================== */
+      /* proposal template */
       .proposal-template {
         display: flex;
         gap: 28px;
@@ -208,43 +196,115 @@
       }
       .pt-title {
         font-family: var(--font-serif);
-        font-size: var(--title-size); /* 26px */
+        font-size: var(--title-size);
         color: var(--title-color);
         font-weight: 800;
         margin: 6px 0 14px;
       }
+
+      /* 列表与序号：使用 grid 布局，保证序号列和内容列对齐 */
       .pt-list {
         list-style: none;
         margin: 0;
         padding: 0;
         counter-reset: item;
+        display: block;
       }
       .pt-list > li {
-        display: block;
-        margin-bottom: 14px;
-      }
-      .pt-list > li::before {
         counter-increment: item;
-        content: counter(item) ".";
-        font-weight: 800;
-        font-size: 18px;
-        color: var(--title-color);
-        display: inline-block;
-        width: 36px;
-        margin-right: 8px;
+        display: grid;
+        grid-template-columns: var(--pt-counter-size) 1fr;
+        column-gap: var(--pt-gap);
+        align-items: start;
+        margin-bottom: 10px; /* li 之间间距，可微调 */
+        padding: 4px 0;
       }
+
+      /* 序号圆圈（放在 li::before） */
+      .pt-list > li::before {
+        content: counter(item) ".";
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--pt-counter-size);
+        height: var(--pt-counter-size);
+        background: var(--title-color);
+        color: #fff;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 16px;
+        box-shadow: 0 4px 10px rgba(0, 74, 159, 0.15);
+        /* place in grid column 1 (default) */
+      }
+
+      /* 让 title 与 body 都处于第二列 */
       .pt-item-title {
-        display: inline-block;
+        grid-column: 2 / -1;
+        display: block;
         font-weight: 700;
         color: var(--title-color);
         font-size: calc(var(--title-size) * 0.95);
-        margin-bottom: 6px;
+        margin: 0 0 4px 0; /* 标题与正文的距离缩小 */
       }
+
       .pt-item-body {
+        grid-column: 2 / -1;
         color: var(--text-color);
-        font-size: var(--text-size);
-        line-height: 1.6;
-        margin-top: 6px;
+        font-size: 22px; /* 你之前要求的较小字号 */
+        line-height: 1.4; /* 行间距较紧凑 */
+        margin: 0; /* 标题与正文之间的间距由标题下 margin 控制（已设为4px） */
+      }
+
+      /* 缩小 pt-item-body 内部 <p> 的间距，首段不留上间距，末段不留下间距 */
+      .pt-item-body p {
+        margin: 0 0 6px; /* 下间距 6px（可改为 4px/8px 看效果）*/
+        line-height: 1.45; /* 保持可读性，必要时可调小到 1.35 */
+        font-size: inherit; /* 继承 .pt-item-body 的字号（保持一致） */
+      }
+
+      /* 确保最后一个段落没有多余下边距（避免在元素结尾处多余空白） */
+      .pt-item-body p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* 可选：如果内联的 <strong> 导致视觉拥挤，可以增加一点间距 */
+      .pt-item-body p strong {
+        display: inline-block;
+        margin-right: 6px; /* 让“问题表述：”与后文稍微分离 */
+        font-weight: 700;
+      }
+
+      /* 小屏下：改为单列显示（序号仍然在左侧） */
+      @media (max-width: 900px) {
+        .proposal-template {
+          flex-direction: column;
+        }
+        .pt-right {
+          width: 100%;
+          height: 120px;
+          order: 2;
+        }
+        .pt-left {
+          order: 1;
+        }
+        .pt-title {
+          font-size: calc(var(--title-size) * 0.95);
+        }
+        /* 缩小文字和间距 */
+        .pt-item-body {
+          font-size: 20px;
+          line-height: 1.35;
+        }
+        .pt-list > li {
+          grid-template-columns: 40px 1fr;
+          column-gap: 10px;
+          margin-bottom: 8px;
+        }
+        .pt-list > li::before {
+          width: 40px;
+          height: 40px;
+          font-size: 15px;
+        }
       }
 
       .pt-right {
@@ -264,211 +324,14 @@
         border-radius: 8px;
         box-shadow: 0 6px 18px rgba(3, 60, 115, 0.04);
       }
-      .decor-top {
-        width: 120px;
-        height: 50px;
-        top: -8px;
-        left: 6%;
-        transform: rotate(-18deg);
-        clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-      }
-      .decor-bottom {
-        width: 220px;
-        height: 140px;
-        bottom: -8px;
-        right: 6%;
-        transform: rotate(12deg);
-        clip-path: polygon(0 10%, 100% 0, 100% 85%, 10% 100%);
+
+      /* timeline (kept minimalist: used as image container in this template) */
+      .timeline-card img {
+        margin: 0;
+        border-radius: 0;
       }
 
-      @media (max-width: 900px) {
-        .proposal-template {
-          flex-direction: column;
-        }
-        .pt-right {
-          width: 100%;
-          height: 120px;
-          order: 2;
-        }
-        .pt-left {
-          order: 1;
-        }
-        .pt-title {
-          font-size: calc(var(--title-size) * 0.95);
-        }
-        .pt-item-body {
-          font-size: calc(var(--text-size) * 0.95);
-        }
-      }
-
-      /* ===========================
-         Timeline
-         =========================== */
-      .timeline-container {
-        position: relative;
-        width: 100%;
-        padding: 32px 12px 36px;
-        box-sizing: border-box;
-        min-height: 260px;
-      }
-      .timeline-title {
-        text-align: center;
-        font-size: calc(var(--title-size) * 1.05);
-        font-weight: 800;
-        color: var(--title-color);
-        margin-bottom: 18px;
-      }
-
-      /* 主线 */
-      .timeline-line {
-        position: absolute;
-        left: 5%;
-        right: 5%;
-        height: 6px;
-        background: #d0d3d8;
-        top: 50%;
-        transform: translateY(-50%);
-        border-radius: 4px;
-        z-index: 1;
-      }
-
-      /* 节点容器：均匀分配节点 */
-      .timeline-items {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        padding: 0 5%;
-        margin-top: 12px;
-        box-sizing: border-box;
-        position: relative;
-      }
-
-      .timeline-item {
-        position: relative;
-        flex: 1 1 0;
-        min-width: 80px;
-        max-width: 16%;
-        text-align: center;
-        box-sizing: border-box;
-      }
-
-      /* 节点外形 */
-      .timeline-node {
-        width: 84px;
-        height: 76px;
-        background: var(--title-color);
-        color: #fff;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 3;
-      }
-
-      /* 连接线：从节点到说明框（利用伪元素） */
-      .timeline-item .timeline-node::after {
-        content: "";
-        position: absolute;
-        left: 50%;
-        top: 100%;
-        width: 2px;
-        height: 12px;
-        background: var(--title-color);
-        transform: translateX(-50%);
-        z-index: 2;
-      }
-
-      /* 说明卡片 */
-      .timeline-box {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 240px;
-        max-width: 28vw;
-        min-width: 180px;
-        padding: 10px 14px;
-        border-radius: 6px;
-        background: #ffe08a;
-        color: #222;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-        z-index: 2;
-        box-sizing: border-box;
-      }
-      .timeline-box-top {
-        bottom: calc(50% + 44px);
-        text-align: center;
-      } /* 放在节点上方 */
-      .timeline-box-bottom {
-        top: calc(50% + 44px);
-        text-align: left;
-      } /* 放在节点下方 */
-
-      /* 给说明卡片也画一条从卡片到节点的短线（伪元素），增强可读性 */
-      .timeline-box::before {
-        content: "";
-        position: absolute;
-        left: 50%;
-        width: 10px;
-        height: 4px;
-        transform: translateX(-50%);
-        background: transparent;
-      }
-
-      /* 小屏幕改为垂直堆叠，隐藏主线 */
-      @media (max-width: 900px) {
-        .timeline-line {
-          display: none;
-        }
-        .timeline-items {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 28px;
-          padding: 0 6%;
-        }
-        .timeline-item {
-          text-align: left;
-          padding-left: 48px;
-          min-height: 64px;
-        }
-        .timeline-node {
-          position: absolute;
-          left: 6%;
-          top: 6px;
-          transform: none;
-          width: 56px;
-          height: 44px;
-          font-size: 12px;
-        }
-        .timeline-node::after {
-          display: none;
-        }
-        .timeline-box {
-          position: relative;
-          left: 0;
-          transform: none;
-          max-width: 100%;
-          min-width: 0;
-          padding-left: 12px;
-          padding-right: 12px;
-        }
-        .timeline-box-top,
-        .timeline-box-bottom {
-          top: auto;
-          bottom: auto;
-          text-align: left;
-        }
-      }
-
-      /* ===========================
-         Issue slides (important problems)
-         =========================== */
+      /* issue slide */
       .issue-slide {
         position: relative;
         overflow: visible;
@@ -573,23 +436,19 @@
         }
       }
 
-      /* ===========================
-         组织与流程容器（3:1布局）
-         =========================== */
+      /* process container: 3:1 layout for timeline and team */
       .process-container {
         display: flex;
         gap: 24px;
         width: 100%;
         box-sizing: border-box;
       }
-
       .timeline-card {
-        flex: 3; /* 3份宽度 */
-        min-width: 0; /* 防止溢出 */
+        flex: 3;
+        min-width: 0;
       }
-
       .team-card {
-        flex: 1; /* 1份宽度 */
+        flex: 1;
         min-width: 0;
         background: linear-gradient(135deg, #f8faff 0%, #e9f2ff 100%);
         border-left: 4px solid #1a6bb3;
@@ -600,14 +459,12 @@
         max-height: 600px;
         overflow-y: auto;
       }
-
       .team-header {
         text-align: center;
         margin-bottom: 24px;
         padding-bottom: 16px;
         border-bottom: 2px solid rgba(26, 107, 179, 0.2);
       }
-
       .team-title {
         font-family: var(--font-serif);
         font-size: calc(var(--title-size) * 0.9);
@@ -615,20 +472,17 @@
         color: var(--title-color);
         margin: 0 0 8px 0;
       }
-
       .team-subtitle {
         font-size: calc(var(--text-size) * 0.75);
         color: var(--text-color);
         font-weight: 600;
         margin: 0;
       }
-
       .members-list {
         list-style: none;
         padding: 0;
         margin: 0;
       }
-
       .member-item {
         padding: 16px 12px;
         border-bottom: 1px solid rgba(26, 107, 179, 0.1);
@@ -640,17 +494,10 @@
         margin-bottom: 8px;
         background: rgba(255, 255, 255, 0.8);
       }
-
       .member-item:hover {
         background: #e6f0ff;
         transform: translateX(3px);
       }
-
-      .member-item:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-      }
-
       .member-number {
         display: inline-flex;
         align-items: center;
@@ -665,13 +512,11 @@
         font-size: calc(var(--text-size) * 0.7);
         flex-shrink: 0;
       }
-
       .member-name {
         font-size: calc(var(--text-size) * 0.85);
         color: var(--text-color);
         font-weight: 600;
       }
-
       .team-footer {
         margin-top: auto;
         padding-top: 16px;
@@ -685,51 +530,44 @@
         .process-container {
           flex-direction: column;
         }
-
         .timeline-card,
         .team-card {
           flex: none;
           width: 100%;
         }
-
         .team-card {
           order: 2;
           margin-top: 24px;
         }
-
         .timeline-card {
           order: 1;
         }
       }
 
-      /* Published list styling */
-      /* 修改已发布列表的样式，添加数字标记和圆圈 */
+      /* published list */
       .published-list {
         list-style: none;
         padding: 12px 4px;
         margin: 0;
-        counter-reset: published-counter; /* 创建计数器 */
+        counter-reset: published-counter;
       }
-
       .published-list li {
         position: relative;
-        padding: 14px 12px 14px 60px; /* 左侧增加内边距给圆圈留空间 */
+        padding: 14px 12px 14px 60px;
         border-bottom: 1px solid var(--border);
         font-size: 30px;
-        min-height: 60px; /* 确保圆圈有足够空间 */
+        min-height: 60px;
         display: flex;
         align-items: center;
       }
-
-      /* 圆圈样式 */
       .published-list li::before {
-        counter-increment: published-counter; /* 递增计数器 */
-        content: counter(published-counter); /* 显示计数器值 */
+        counter-increment: published-counter;
+        content: counter(published-counter);
         position: absolute;
         left: 12px;
         top: 50%;
         transform: translateY(-50%);
-        width: 44px; /* 圆圈大小 */
+        width: 44px;
         height: 44px;
         background-color: var(--title-color);
         color: white;
@@ -742,8 +580,6 @@
         box-shadow: 0 4px 8px rgba(0, 74, 159, 0.2);
         z-index: 1;
       }
-
-      /* 可选：添加圆圈背景光晕效果 */
       .published-list li::after {
         content: "";
         position: absolute;
@@ -756,7 +592,6 @@
         border-radius: 50%;
         z-index: 0;
       }
-
       .published-list li a {
         color: var(--text-color);
         text-decoration: none;
@@ -766,13 +601,12 @@
         transition: all 0.2s ease;
         padding: 4px 0;
       }
-
       .published-list li a:hover {
         text-decoration: underline;
         color: var(--title-color);
         transform: translateX(4px);
       }
-      /* Published hero (replaces image) */
+
       .published-hero {
         margin-bottom: 18px;
         padding: 20px;
@@ -791,26 +625,7 @@
         text-align: center;
       }
 
-      /* 调整移动端样式 */
-      @media (max-width: 900px) {
-        .published-list li {
-          font-size: 26px;
-          padding-left: 56px;
-        }
-
-        .published-list li::before {
-          width: 40px;
-          height: 40px;
-          font-size: 20px;
-        }
-
-        .published-list li::after {
-          width: 48px;
-          height: 48px;
-        }
-      }
-
-      /* ===== Back button & breadcrumb for issue pages ===== */
+      /* back button & breadcrumb for issue pages */
       .issue-topbar {
         display: flex;
         gap: 12px;
@@ -871,7 +686,6 @@
 
     <div class="page">
       <div class="shell">
-        <!-- 左侧导航 -->
         <aside class="sidebar" aria-label="页面目录">
           <div class="nav-title">目录</div>
           <ul class="nav-list">
@@ -886,7 +700,6 @@
                 模板与联系方式
               </button>
             </li>
-            <!-- 已发布重要问题：展开子目录 -->
             <li>
               <button
                 class="nav-btn"
@@ -903,7 +716,6 @@
                 role="menu"
                 aria-label="已发布重要问题列表（侧边）"
               >
-                <!-- JS 动态填充：每一项为 issues 的 title -->
                 <li
                   style="color: var(--muted); padding: 6px 8px; font-size: 16px"
                 >
@@ -914,9 +726,7 @@
           </ul>
         </aside>
 
-        <!-- 右侧内容区 -->
         <main id="mainContent" aria-live="polite">
-          <!-- 默认视图 -->
           <section id="defaultView" class="card" aria-labelledby="navDefault">
             <h3 id="navDefault" class="sr-only">默认视图</h3>
             <img
@@ -926,7 +736,6 @@
             />
           </section>
 
-          <!-- 背景与动机 -->
           <section
             id="motivation"
             class="card"
@@ -934,7 +743,6 @@
             aria-labelledby="navMotivation"
           >
             <h3 id="navMotivation" class="sr-only">背景与动机</h3>
-
             <div
               style="
                 padding: 20px 10px;
@@ -942,7 +750,14 @@
                 font-family: var(--font-sans);
               "
             >
-              <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 12px;
+                  margin-bottom: 14px;
+                "
+              >
                 <div style="font-size: 20px">
                   当前，人类正在进入一个人机物三元融合的万物智能互联时代，软件工程也面临着一场变革。一方面，人机物三元融合打开了新的需求空间，“软件定义一切”日益成为一种现实，这大大拓展了软件工程的学科疆域。另一方面，新一轮人工智能技术的突破赋予了软件新的内在能力，使得软件系统可以处理涉及高维对象、非确定、以及逻辑规则难以描述的任务，也给软件工程自身的自动化和智能化带来了新的契机。软件工程的研究与实践长期致力于高效率、低代价地构造和运行高质量的各种规模的及各种复杂性的软件系统。上述两方面的发展趋势激发我们重新思考软件工程的内涵和外延，更好地应对和把握其所带来的挑战与机遇。
                 </div>
@@ -953,88 +768,7 @@
                   专委会向专委全体成员及社会软件工程相关领域专家公开征集“软件工程重要研究问题”提案。问题征集结束后，专委会组织专委常委进行遴选、编辑，并向社会公开发布入选的“软件工程重要研究问题”。
                 </div>
               </div>
-              <div style="display: flex; gap: 12px; margin-bottom: 14px">
-                <div
-                  style="
-                    width: 12px;
-                    height: 12px;
-                    background: var(--title-color);
-                    margin-top: 6px;
-                    border-radius: 2px;
-                  "
-                ></div>
-                <div style="line-height: 1.6">
-                  <div
-                    style="
-                      font-weight: 700;
-                      color: var(--title-color);
-                      margin-bottom: 6px;
-                      font-size: calc(var(--title-size));
-                    "
-                  >
-                    工作动机
-                  </div>
-                  <div style="font-size: var(--text-size)">
-                    凸显学术组织定位，凝聚引导学界共识
-                  </div>
-                </div>
-              </div>
-
-              <div style="display: flex; gap: 12px; margin-bottom: 14px">
-                <div
-                  style="
-                    width: 12px;
-                    height: 12px;
-                    background: var(--title-color);
-                    margin-top: 6px;
-                    border-radius: 2px;
-                  "
-                ></div>
-                <div style="line-height: 1.6">
-                  <div
-                    style="
-                      font-weight: 700;
-                      color: var(--title-color);
-                      margin-bottom: 6px;
-                      font-size: calc(var(--title-size));
-                    "
-                  >
-                    机制流程
-                  </div>
-                  <div style="font-size: var(--text-size)">
-                    公开征集，反复论证，分批发布
-                  </div>
-                </div>
-              </div>
-
-              <div style="display: flex; gap: 12px">
-                <div
-                  style="
-                    width: 12px;
-                    height: 12px;
-                    background: var(--title-color);
-                    margin-top: 6px;
-                    border-radius: 2px;
-                  "
-                ></div>
-                <div style="line-height: 1.6">
-                  <div
-                    style="
-                      font-weight: 700;
-                      color: var(--title-color);
-                      margin-bottom: 6px;
-                      font-size: calc(var(--title-size));
-                    "
-                  >
-                    目标效果
-                  </div>
-                  <div style="font-size: var(--text-size)">
-                    推动政企支持，推动社区发展
-                  </div>
-                </div>
-              </div>
             </div>
-
             <img
               src="./src/background.png"
               class="auto-img"
@@ -1043,7 +777,6 @@
             />
           </section>
 
-          <!-- 组织与流程（时间线 + 首届工作组） -->
           <section
             id="process"
             class="card"
@@ -1051,56 +784,46 @@
             aria-labelledby="navProcess"
           >
             <h3 id="navProcess" class="sr-only">组织与流程</h3>
-
             <div class="process-container">
-              <!-- 左侧首届工作组部分 (1/4宽度) -->
               <div class="team-card">
                 <div class="team-header">
                   <h2 class="team-title">首届工作组</h2>
                   <p class="team-subtitle">工作组成员名单</p>
                 </div>
-
                 <ul class="members-list">
                   <li class="member-item">
-                    <span class="member-number">1</span>
-                    <span class="member-name">李宣东</span>
+                    <span class="member-number">1</span
+                    ><span class="member-name">李宣东</span>
                   </li>
                   <li class="member-item">
-                    <span class="member-number">2</span>
-                    <span class="member-name">张东梅</span>
+                    <span class="member-number">2</span
+                    ><span class="member-name">张东梅</span>
                   </li>
                   <li class="member-item">
-                    <span class="member-number">3</span>
-                    <span class="member-name">李戈</span>
+                    <span class="member-number">3</span
+                    ><span class="member-name">李戈</span>
                   </li>
                   <li class="member-item">
-                    <span class="member-number">4</span>
-                    <span class="member-name">夏鑫</span>
+                    <span class="member-number">4</span
+                    ><span class="member-name">夏鑫</span>
                   </li>
                   <li class="member-item">
-                    <span class="member-number">5</span>
-                    <span class="member-name">刘辉</span>
+                    <span class="member-number">5</span
+                    ><span class="member-name">刘辉</span>
                   </li>
                   <li class="member-item">
-                    <span class="member-number">6</span>
-                    <span class="member-name">马晓星</span>
+                    <span class="member-number">6</span
+                    ><span class="member-name">马晓星</span>
                   </li>
                 </ul>
               </div>
 
-              <!-- 右侧时间线部分 (3/4宽度) -->
               <div class="timeline-card">
-                <img
-                  src="./src/timeline.png"
-                  class="auto-img"
-                  alt="timeline"
-                  style="margin: 0; border-radius: 0"
-                />
+                <img src="./src/timeline.png" class="auto-img" alt="timeline" />
               </div>
             </div>
           </section>
 
-          <!-- 模板 -->
           <section
             id="template"
             class="card"
@@ -1108,11 +831,9 @@
             aria-labelledby="navTemplate"
           >
             <h3 id="navTemplate" class="sr-only">模板与联系方式</h3>
-
             <div class="proposal-template">
               <div class="pt-left">
                 <h1 class="pt-title">软件工程重要问题提议模版</h1>
-
                 <ol class="pt-list">
                   <li>
                     <div class="pt-item-title">问题描述</div>
@@ -1161,12 +882,7 @@
                   </li>
                 </ol>
 
-                <!-- 联系方式（新增，联系人标题样式与提案模版标题保持一致） -->
                 <div style="margin-top: 22px">
-                  <!-- <div
-                    class="pt-item-title"
-                    style="display: block; margin-top: 6px"
-                  > -->
                   <h1 class="pt-title" style="color: crimson">联系人</h1>
                   <div class="pt-item-body" style="margin-top: 8px">
                     新提案请通过电子邮件发送给 CCF 软件工程专委秘书处：
@@ -1177,28 +893,21 @@
             </div>
           </section>
 
-          <!-- 已发布重要问题（新的页面） -->
           <section
             id="published"
             class="card"
             style="display: none"
             aria-labelledby="navPublished"
           >
-            <!-- <h3 id="navPublished" class="sr-only">已发布重要问题</h3> -->
-
-            <!-- 顶部改为文字说明（替换原先图片） -->
             <div class="published-hero" role="img" aria-label="发布说明">
               CCF 软件工程委员会在 2025 CCF
               中国软件大会闭幕式上正式发布了三个软件工程重要研究问题
             </div>
 
-            <!-- 列表容器，JS 动态填充 -->
             <ul id="publishedList" class="published-list" aria-live="polite">
               <li style="color: var(--muted)">正在加载已发布问题……</li>
             </ul>
           </section>
-
-          <!-- 动态注入的 issue 页面容器（JS 会往 mainContent 中插入 issue-section） -->
         </main>
       </div>
     </div>
@@ -1206,15 +915,6 @@
     <footer class="footer">© 2025 中国计算机学会 软件工程专业委员会</footer>
 
     <script>
-      /***********************************************
-       * 动态 Issue 加载与导航（返回仅在页面内重定向到 published）
-       * 修改说明（根据用户要求）：
-       * 1. 侧边栏“已发布重要问题”可展开子目录，子目录项来自 issues.json 的 title。
-       *    子目录字体大小与整体风格保持一致，并添加下划线。
-       * 2. 在模板页面下方添加联系方式，联系人标题与“软件工程重要问题提议模版”同样的样式（已在 HTML 中完成）。
-       * 3. 替换已发布页面顶部图片为指定文字并美观渲染（已在 HTML/CSS 中完成）。
-       ***********************************************/
-
       const staticSections = [
         "defaultView",
         "motivation",
@@ -1223,7 +923,6 @@
         "published",
       ];
       const dynamicSections = [];
-
       window.issuesData = null;
       window.issuesLoaded = false;
 
@@ -1238,13 +937,11 @@
           loadIssues()
             .then(() => {
               const realId = resolveIssueId(id);
-              // if opening published or issue page, expand sidebar published sublist
               if (
                 realId === "published" ||
                 (realId && realId.startsWith("issue-"))
-              ) {
+              )
                 setPublishedExpanded(true);
-              }
               performShow(realId);
             })
             .catch((err) => {
@@ -1253,12 +950,8 @@
             });
         } else {
           const realId = resolveIssueId(id);
-          if (
-            realId === "published" ||
-            (realId && realId.startsWith("issue-"))
-          ) {
+          if (realId === "published" || (realId && realId.startsWith("issue-")))
             setPublishedExpanded(true);
-          }
           performShow(realId);
         }
       }
@@ -1271,13 +964,11 @@
             s.style.display = s.id === id ? "" : "none";
           } catch (e) {}
         });
-
         if (!document.getElementById(id)) {
           id = "defaultView";
           const dv = document.getElementById(id);
           if (dv) dv.style.display = "";
         }
-
         document.querySelectorAll(".nav-btn[data-key]").forEach((b) => {
           b.classList.toggle(
             "active",
@@ -1285,11 +976,8 @@
               (id && id.startsWith("issue-") && b.dataset.key === "published")
           );
         });
-
-        if (location.hash.slice(1) !== id) {
+        if (location.hash.slice(1) !== id)
           history.replaceState(null, "", "#" + id);
-        }
-
         try {
           window.scrollTo && window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (e) {}
@@ -1373,7 +1061,6 @@
           );
           issue._internalId = id;
           dynamicSections.push(id);
-
           const li = document.createElement("li");
           const a = document.createElement("a");
           a.href = "#" + id;
@@ -1404,7 +1091,6 @@
           const id =
             issue._internalId ||
             safeIdForIssue(issue.id || issue.title || "issue-" + idx, idx);
-          // ensure internal id stored
           issue._internalId = id;
           const li = document.createElement("li");
           const btn = document.createElement("button");
@@ -1425,8 +1111,6 @@
         if (sectionEl.querySelector(".issue-topbar")) return;
         const topbar = document.createElement("div");
         topbar.className = "issue-topbar";
-
-        // back button: 强制在页面内重定向到已发布（不使用 history.back）
         const backBtn = document.createElement("button");
         backBtn.className = "back-btn";
         backBtn.setAttribute("aria-label", "返回已发布重要问题列表");
@@ -1434,34 +1118,9 @@
           '<span class="back-icon" aria-hidden="true"></span><span>返回</span>';
         backBtn.addEventListener("click", (ev) => {
           ev.preventDefault();
-          // 直接在页面内跳转回 published（不会触发浏览器后退）
           showSection("published");
         });
-
-        // breadcrumb
-        const bc = document.createElement("div");
-        bc.className = "breadcrumb";
-        const a = document.createElement("a");
-        a.href = "#published";
-        a.textContent = "已发布重要问题";
-        a.addEventListener("click", (ev) => {
-          ev.preventDefault();
-          showSection("published");
-        });
-        const sep = document.createElement("span");
-        sep.className = "sep";
-        sep.textContent = "›";
-        const titleSpan = document.createElement("span");
-        titleSpan.style.fontWeight = "800";
-        titleSpan.textContent = issue.title || "未命名问题";
-
-        bc.appendChild(a);
-        bc.appendChild(sep);
-        bc.appendChild(titleSpan);
-
         topbar.appendChild(backBtn);
-        // topbar.appendChild(bc);
-
         const inner = sectionEl.querySelector(".issue-inner");
         if (inner) inner.insertBefore(topbar, inner.firstChild);
         else sectionEl.insertBefore(topbar, sectionEl.firstChild);
@@ -1480,7 +1139,6 @@
           section.className = "card issue-slide";
           section.style.display = "none";
           section.setAttribute("aria-labelledby", id + "-label");
-
           const title = issue.title || "未命名问题";
           const label = issue.label || "问题表述：";
           const subtitle = issue.subtitle || issue.tagline || "";
@@ -1491,7 +1149,6 @@
             ? [issue.authors]
             : [];
           const authorsDisplay = authors.length ? authors.join("，") : "";
-
           section.innerHTML = `
             <h3 id="${id}-label" class="sr-only">${title}</h3>
             <div class="issue-decor decor-top-left" aria-hidden="true"></div>
@@ -1512,17 +1169,13 @@
             </div>
             <div class="issue-decor decor-bottom-right" aria-hidden="true"></div>
           `;
-
           const publishedEl = document.getElementById("published");
-          if (publishedEl && publishedEl.parentNode) {
+          if (publishedEl && publishedEl.parentNode)
             publishedEl.parentNode.insertBefore(
               section,
               publishedEl.nextSibling
             );
-          } else {
-            main.appendChild(section);
-          }
-
+          else main.appendChild(section);
           createTopbarForIssue(section, issue);
         });
       }
@@ -1554,12 +1207,10 @@
         document.querySelectorAll(".nav-btn[data-key]").forEach((btn) => {
           btn.addEventListener("click", () => {
             const key = btn.dataset.key;
-            // Special behavior: if clicking published, toggle sublist visibility as well
             if (key === "published") {
               const sublist = document.getElementById("publishedSublist");
               const isShown = sublist && sublist.classList.contains("show");
               setPublishedExpanded(!isShown);
-              // Always show the published main page when pressing the parent
               showSection("published");
             } else {
               showSection(key);
@@ -1569,7 +1220,6 @@
 
         showSection("defaultView");
 
-        // Preload issues (will populate both main published list and sidebar sublist)
         loadIssues().catch((err) => {
           console.warn("预加载 issues.json 失败：", err);
           const publishedListEl = document.getElementById("publishedList");
@@ -1580,7 +1230,6 @@
               "无法加载已发布问题（请确保 issues.json 与本页面位于同一目录且为数组格式）。";
             publishedListEl.appendChild(li);
           }
-          // Sidebar fallback
           const sublist = document.getElementById("publishedSublist");
           if (sublist) {
             sublist.innerHTML = "";
@@ -1601,9 +1250,8 @@
           const allSections = document.querySelectorAll("main > section");
           for (const s of allSections) {
             if (getComputedStyle(s).display !== "none") {
-              if (location.hash.slice(1) !== s.id) {
+              if (location.hash.slice(1) !== s.id)
                 history.replaceState(null, "", "#" + s.id);
-              }
               break;
             }
           }
@@ -1620,15 +1268,13 @@
           if (h) showSection(h);
         });
 
-        // Escape: 在 issue 页面内回到 published（不使用浏览器后退）
         window.addEventListener("keydown", function (e) {
           if (e.key === "Escape" || e.key === "Esc") {
             const visible = Array.from(
               document.querySelectorAll("main > section")
             ).find((s) => getComputedStyle(s).display !== "none");
-            if (visible && visible.id && visible.id.startsWith("issue-")) {
+            if (visible && visible.id && visible.id.startsWith("issue-"))
               showSection("published");
-            }
           }
         });
       })();
