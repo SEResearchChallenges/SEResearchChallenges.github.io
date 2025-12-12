@@ -27,6 +27,8 @@
         /* 列宽（序号列宽度） */
         --pt-counter-size: 36px;
         --pt-gap: 12px;
+        /* 整体左缩进（会把序号列向右推） */
+        --pt-list-indent: 30px;
       }
 
       html,
@@ -202,13 +204,15 @@
         margin: 6px 0 14px;
       }
 
-      /* 列表与序号：使用 grid 布局，保证序号列和内容列对齐 */
+      /* 列表与序号：使用 grid 布局，保证序号列和内容列对齐
+         —— 额外增加 .pt-list 的 padding-left 控制整体缩进（使序号也右移） */
       .pt-list {
         list-style: none;
         margin: 0;
         padding: 0;
         counter-reset: item;
         display: block;
+        padding-left: var(--pt-list-indent); /* 关键：整体向右缩进，序号也会随之移动 */
       }
       .pt-list > li {
         counter-increment: item;
@@ -234,7 +238,6 @@
         font-weight: 700;
         font-size: 16px;
         box-shadow: 0 4px 10px rgba(0, 74, 159, 0.15);
-        /* place in grid column 1 (default) */
       }
 
       /* 让 title 与 body 都处于第二列 */
@@ -294,6 +297,10 @@
         .pt-item-body {
           font-size: 20px;
           line-height: 1.35;
+        }
+        .pt-list {
+          /* 移动端缩进稍微减小以适应小屏 */
+          padding-left: calc(var(--pt-list-indent) - 6px);
         }
         .pt-list > li {
           grid-template-columns: 40px 1fr;
