@@ -1,26 +1,281 @@
 [
   {
-    "id": "auto-theorem",
+    "id": "automatic-program-theorem-proving",
     "title": "自动程序定理证明",
     "label": "问题表述：",
     "subtitle": "如何高度自动化地生成程序定理的形式化证明？",
-    "body": "给定程序及其形式化的规约，生成程序满足规约的形式化证明。规约来源包括通用属性规约、人工给定规约以及大语言模型辅助生成的规约；规约内容可涵盖功能属性以及非功能属性。证明必须是能用定理证明器自动验证的，最好同时也是人类易理解的；证明过程可以是全自动的，也可以是半自动交互式的。",
-    "authors": ["马晓星", "熊英飞", "赵永望"]
+    "sections": [
+      {
+        "heading": "问题描述",
+        "content": [
+          {
+            "type": "p",
+            "label": "解释说明：",
+            "text": "给定程序及其形式化的规约，生成程序满足规约的形式化证明。规约来源包括通用属性规约、人工给定规约以及大语言模型辅助生成的规约；规约内容可涵盖功能属性以及非功能属性；证明必须是能用定理证明器自动验证的，最好同时也是人类易理解的。证明过程可以是全自动的，也可以是半自动交互式的。"
+          },
+          {
+            "type": "p",
+            "label": "研究现状：",
+            "text": "传统基于符号推理的程序正确性证明工作自动化程度低、大量工作依赖人工。基于神经计算（特别是大模型）的形式化证明自动生成已在数学定理自动证明领域展现了巨大潜力，也为自动程序定理证明打开了空间。"
+          },
+          {
+            "type": "p",
+            "label": "期待突破的目标和途径：",
+            "text": "结合基于神经网络（特别是大模型）和符号证明技术，构建程序定理证明自动生成系统，大幅度提升关键软件的形式化证明的自动化程度（例如，在seL4规模的软件系统的形式验证任务上实现10-100倍的人工效率提升）。"
+          }
+        ]
+      },
+      {
+        "heading": "重要意义",
+        "content": [
+          {
+            "type": "p",
+            "text": "面向程序的自动定理证明技术进展，有望显著提升关键软件系统形式验证的现实可行性。更进一步，它将推动系统化发展证明工程，包括复用、结构化、模块化等证明工程思想和方法学、面向证明工程编程语言、自动化证明辅助环境等支撑工具等。"
+          },
+          {
+            "type": "p",
+            "text": "有助于突破大模型生成代码的可信性瓶颈，显著提升软件开发的自动化程度，全面改进软件质量和生产率，降低开发运维代价。"
+          },
+          {
+            "type": "p",
+            "text": "基于大模型的程序及其证明的生成，有望成为促进人工智能发展的软件途径：带证明的程序生成，可为安全攸关具身智能系统的实际应用提供安全保证；程序代码和证明的生成相互促进，在技术上，可视为通过self-consistency 实现LLM的生成能力增强；证明生成是一种通过“系统1”来实现“系统2”能力的途径（“系统1”和“系统2”的说法来自Daniel Kahneman：Thinking, Fast and Slow）。"
+          }
+        ]
+      },
+      {
+        "heading": "示例或相关工作",
+        "content": [
+          {
+            "type": "list",
+            "items": [
+              "基于大模型的自动数学定理证明(ATP) 和交互定理证明(ITP)[LSM24]",
+              "从非形式论证到形式论证(Autoformalization)[WJL22]",
+              "引理选择(Premise Selection)，证明步骤生成与整个证明的搜索",
+              "供模型学习的形式证明数据的自动生成",
+              "程序证明生成[LRRT24]与带证明的程序生成",
+              "不变式和规约生成[WCS24, WCYH24]",
+              "程序证明生成[LSN24]",
+              "验证友好程序生成 – Dafny[SSP24,MDRH24] ,Verus [YZC22]"
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "参考文献",
+        "content": [
+          {
+            "type": "ref-group",
+            "group": "综述",
+            "items": [
+              "[LRRT24] M. Lyu et al. Automatic Programming: Large Language Models and Beyond. arXiv:2405.02213v2",
+              "[LSM24] Z. Li et al. A Survey on Deep Learning for Theorem Proving. COLM 2024. arXiv:2404.09939v3"
+            ]
+          },
+          {
+            "type": "ref-group",
+            "group": "数据集、评测基准",
+            "items": [
+              "[LSN24] L. Zhang et al. Selene: Pioneering Automated Proof in Software Verification. 2024 arXiv:2401.07663",
+              "[MDRH24] MD R H Misu et al, Towards AI-Assisted Synthesis of Verified Dafny Methods, FSE 2024",
+              "[SSP24] C. Sun et al. Clover: Closed-Loop Verifiable Code Generation. 2024. arXiv:2310.17807v3"
+            ]
+          }
+        ]
+      }
+    ],
+    "authors": ["马晓星，南京大学", "熊英飞，北京大学", "赵永望，浙江大学"]
   },
+
   {
-    "id": "legacy-refactor",
-    "title": "大规模代码遗产系统的优化与重构",
-    "label": "问题表述：",
-    "subtitle": "如何对大规模遗产系统开展全自动优化与重构？",
-    "body": "大规模代码遗产系统通常缺乏必要的文档、具有复杂的结构和历史积累的技术债务，对其进行维护和重构长期以来一直都是软件工程领域的难题和挑战。非功能属性的优化与功能性修改不同，可以不依赖于特定软件系统的规约，在保证软件功能不变的前提下，提升软件性能、安全性、可移植性等非功能属性。当前人工智能技术的突破与发展，为自动完成非功能属性的优化任务打开了空间。",
-    "authors": ["熊英飞", "刘辉", "李宣东"]
-  },
-  {
-    "id": "trusted-code",
+    "id": "trustworthy-code-generation",
     "title": "自动生成可信程序代码",
     "label": "问题表述：",
     "subtitle": "给定模块级规模的自然语言功能描述，自动生成达到人工编程可信程度的程序代码。",
-    "body": "程序代码自动生成是长期受到软件工程领域关注的难题。以往的研究工作大都是基于形式化的需求规约或设计规约生成程序代码，主要包括基于形式化方法的程序综合、基于逻辑规则的代码生成、基于设计模型的程序生成等，但是这些工作的可扩展性和自动化程度离实际应用要求都有很大距离。当前大语言模型可以从自然语言功能描述直接生成预测性程序代码，为程序代码自动生成打开了空间，如何基于大语言模型自动生成达到人工编程可信程度的程序代码成为进一步期待突破的难题和挑战。",
-    "authors": ["李戈", "夏鑫"]
+    "sections": [
+      {
+        "heading": "问题描述",
+        "content": [
+          {
+            "type": "p",
+            "label": "解释说明：",
+            "text": "程序代码自动生成是长期受到软件工程领域关注的难题。以往的研究工作大都是基于形式化的需求规约或设计规约生成程序代码，主要包括基于形式化方法的程序综合、基于逻辑规则的代码生成、基于设计模型的程序生成等，但是这些工作的可扩展性和自动化程度离实际应用要求都有很大距离。当前大语言模型可以从自然语言功能描述直接生成预测性程序代码，为程序代码自动生成打开了空间，如何基于大语言模型自动生成达到人工编程可信程度的程序代码成为进一步期待突破的难题和挑战。"
+          }
+        ]
+      },
+      {
+        "heading": "研究现状",
+        "content": [
+          {
+            "type": "list",
+            "items": [
+              "当前已经出现诸多关于代码概率模型的研究工作，当前的大模型在程序代码学习与处理方面仍存在学习效率低，推理准确率距离实际应用需求仍存在较大差距的问题；",
+              "多智能体协作的技术也已大量被研究，但是当前很少有工作能验证在实际场景中的补丁生成的准确率；",
+              "DeepSeek-R1等一系列推理大模型通过强化学习，偏好优化等技术进行反复试错，逐渐学会多步推理问题，然而当前的研究多集中于在标准数据集上的性能评估，（1）很难理解工业中复杂、特定领域代码库下的上下文，（2）生成准确率距离工业应用需求仍存在较大差距的问题。究其原因，仍在于未能在上述两个层面形成有效突破。"
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "研究目标",
+        "content": [
+          {
+            "type": "list",
+            "items": [
+              "研究适用于工业级的基于智能体的代码生成框架，能够大幅度增强大模型对于工业级软件上下文的理解程度。",
+              "研究代码相关的推理类大模型，能够大幅提升生成代码的准确率，最终增强关键软件的可信程度和功能正确性，减少模型生成幻觉的可能性。",
+              "在SWE-Lancer等接近实际场景的数据集上展开原型验证，在Pass@1和Pass@5等指标上达到60%以上；并同步与企业实际场景结合（如基于特性的开发、基于问题单的补丁生成等），持续催熟相关技术，并解决工业场景的代码生成问题。"
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "重要意义",
+        "content": [
+          {
+            "type": "p",
+            "label": "国家需求：",
+            "text": "随着数字化转型步伐加快，各行业对于高质量软件的需求日益增长。研究在工业场景中利用大语言模型生成安全可信且高可用的代码，不仅能显著提高软件生产的自动化水平，还能提升软件开发的效率与质量，从而满足国家对于高效、可靠技术解决方案的迫切需求。"
+          },
+          {
+            "type": "p",
+            "label": "应用价值：",
+            "text": "对软件开发行业来说，运用大语言模型和强化学习相结合的方式辅助代码生成，可以在极大提升开发效率的同时减少模型生成幻觉的可能性，最终减少人为编程的错误。特别是在处理工业级复杂软件时，基于智能体的生成框架可以有效防止敏感数据泄露，代码相关的推理类大模型的应用能帮助开发者迅速编写出符合行业标准的代码，缩短调试周期，提升软件产品的整体质量和市场竞争力。"
+          }
+        ]
+      },
+      {
+        "heading": "示例或相关工作",
+        "content": [
+          {
+            "type": "list",
+            "items": [
+              "基于大模型的代码生成幻觉研究[1]",
+              "工业场景的数据集和评测基准[2][3][4]",
+              "代码大模型 [5][6][7]",
+              "强化学习和偏好优化[8][9]",
+              "智能体相关的代码生成[10][11]"
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "参考文献",
+        "content": [
+          {
+            "type": "ref-group",
+            "group": "经验分析",
+            "items": [
+              "[1] Y. Tian et al. CodeHalu: Code Hallucinations in LLMs Driven by Execution-based Verification. arXiv:2405.00253 (2024)."
+            ]
+          },
+          {
+            "type": "ref-group",
+            "group": "数据集、评测基准",
+            "items": [
+              "[2] J. Li et al. DevEval: A Manually-Annotated Code Generation Benchmark Aligned with Real-World Code Repositories. arXiv:2405.19856 (2024).",
+              "[3] S. Miserendino et al. SWE-Lancer: Can Frontier LLMs Earn $1 Million from Real-World Freelance Software Engineering? arXiv:2502.12115 (2025).",
+              "[4] Z. Pan et al. Codev-Bench: How Do LLMs Understand Developer-Centric Code Completion? arXiv:2410.01353 (2024)."
+            ]
+          }
+        ]
+      }
+    ],
+    "authors": []
+  },
+  {
+    "id": "legacy-system-optimization-refactoring",
+    "title": "大规模代码遗产系统的优化与重构",
+    "label": "问题表述：",
+    "subtitle": "如何对大规模遗产系统开展全自动优化与重构？",
+    "sections": [
+      {
+        "heading": "问题描述",
+        "content": [
+          {
+            "type": "p",
+            "label": "解释说明：",
+            "text": "大规模代码遗产系统通常缺乏必要的文档、具有复杂的结构和历史积累的技术债务，对其进行维护和重构长期以来一直都是软件工程领域的难题和挑战。例如，美国社会保障管理局的信息管理系统中尚存在6000万行用COBOL编写的代码，若要重构预计需要投入近7亿美元和5年时间，至今无人敢问津。软件维护可以看做是对软件做功能性修改和非功能性优化。由于遗产系统中通常缺失严格定义的规约，所以功能性修改从本质来讲无法做到完全自动化，必须依靠和开发人员的交互来完成。但是，非功能属性的优化与功能性修改不同，可以不依赖于特定软件系统的规约，在保证软件功能不变的前提下，提升软件性能、安全性、可移植性等非功能属性。当前人工智能技术的突破与发展，为自动完成非功能属性的优化任务打开了空间。"
+          }
+        ]
+      },
+      {
+        "heading": "研究现状",
+        "content": [
+          {
+            "type": "list",
+            "items": [
+              "传统编译技术采用确定性规则对代码进行优化，但通常只能实现局部的小优化，较少改变算法复杂度。",
+              "目前有少量基于大模型或传统程序合成技术对软件性能进行优化的研究，但通常依赖测试检查功能等价性，无法做到完全自动优化。",
+              "其他非功能属性的优化也有一些研究，但主要针对特定质量问题进行改进，没有形成系统性的方法。"
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "研究目标",
+        "content": [
+          {
+            "type": "list",
+            "items": [
+              "保证大规模代码遗产系统功能不变（即外部可见的输入输出行为保持不变），提升软件性能、安全性、可移植性等非功能属性。"
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "重要意义",
+        "content": [
+          {
+            "type": "p",
+            "label": "国家需求：",
+            "text": "随着中美竞争的加剧，越来越多的海外高性能芯片对中国大陆禁运。在在国产芯片取得大面积突破之前，国内信息产业都面临芯片性能不足的问题。大规模代码遗产系统在国内各行业中广泛存在，其性能优化与重构可以有效缓解硬件性能不足的问题，为国产芯片的突破争取重要的时间窗口。此外，优化后的系统能够更好地适配国产硬件和操作系统，提升国家信息产业的自主可控能力。"
+          },
+          {
+            "type": "p",
+            "label": "应用价值：",
+            "text": "对于软件行业而言，软件系统的性能是核心竞争力，性能更高的软件不仅仅节省硬件资源，也能显著提升用户体验。软件其他非功能属性对软件企业也有重要的价值。然而，遗产系统的优化与重构通常面临高昂的人力成本和技术风险，传统方式难以全面实施。自动优化与重构技术可以大幅降低成本和风险，同时优化之后的代码也更容易在功能性维护和扩展，帮助企业快速提升系统质量，增强市场竞争力。"
+          },
+          {
+            "type": "p",
+            "label": "学术意义：",
+            "text": "大规模代码遗产系统的优化与重构涉及多个软件工程领域的核心问题，例如如何度量系统的非功能属性、如何定义和验证系统功能不变性等。该研究有望推动这些基础领域的进一步发展，并为软件工程学科提供新的理论和方法支持。"
+          }
+        ]
+      },
+      {
+        "heading": "示例或相关工作",
+        "content": [
+          {
+            "type": "list",
+            "items": [
+              "基于函数式语言自动优化算法[1]并验证正确性[2]",
+              "基于大模型对代码进行优化[3,4]",
+              "通过替换Java容器对程序进行优化[5]"
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "参考文献",
+        "content": [
+          {
+            "type": "ref-group",
+            "group": "参考文献",
+            "items": [
+              "[1] Ruyi Ji, Yuwei Zhao, Nadia Polikarpova, Yingfei Xiong*, Zhenjiang Hu. Superfusion: Eliminating Intermediate Data Structures via Inductive Synthesis. PLDI'24: ACM SIGPLAN Conference on Programming Language Design and Implementation, June 2024.",
+              "[2] Yican Sun, Ruyi Ji, Jian Fang, Xuanlin Jiang, Mingshuai Chen, Yingfei Xiong*. Proving Functional Program Equivalence via Directed Lemma Synthesis. FM'24: 26th International Symposium on Formal Methods, September 2024.",
+              "[3] Spandan Garg, Roshanak Zilouchian Moghaddam, Colin B. Clement, Neel Sundaresan, Chen Wu: DeepDev-PERF: a deep learning-based approach for improving software performance. ESEC/SIGSOFT FSE 2022: 948-958",
+              "[4] Z. Chen, S. Fang and M. Monperrus, \"SUPERSONIC: Learning to Generate Source Code Optimizations in C/C++,\" in IEEE Transactions on Software Engineering, doi: 10.1109/TSE.2024.3423769.",
+              "[5] Chengpeng Wang, Peisen Yao, Wensheng Tang, Qingkai Shi, Charles Zhang: Complexity-guided container replacement synthesis. Proc. ACM Program. Lang. 6(OOPSLA1): 1-31 (2022)"
+            ]
+          }
+        ]
+      }
+    ],
+    "authors": [
+      "熊英飞（北京大学）",
+      "刘辉（北京理工大学）",
+      "李宣东（南京大学）"
+    ]
   }
 ]
