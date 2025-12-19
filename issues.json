@@ -83,7 +83,7 @@
         ]
       }
     ],
-    "authors": ["马晓星，南京大学", "熊英飞，北京大学", "赵永望，浙江大学"]
+    "authors": ["马晓星（南京大学）", "熊英飞（北京大学）", "赵永望（浙江大学）"]
   },
 
   {
@@ -260,7 +260,7 @@
         "content": [
           {
             "type": "ref-group",
-            "group": "参考文献",
+            "group": "",
             "items": [
               "[1] Ruyi Ji, Yuwei Zhao, Nadia Polikarpova, Yingfei Xiong*, Zhenjiang Hu. Superfusion: Eliminating Intermediate Data Structures via Inductive Synthesis. PLDI'24: ACM SIGPLAN Conference on Programming Language Design and Implementation, June 2024.",
               "[2] Yican Sun, Ruyi Ji, Jian Fang, Xuanlin Jiang, Mingshuai Chen, Yingfei Xiong*. Proving Functional Program Equivalence via Directed Lemma Synthesis. FM'24: 26th International Symposium on Formal Methods, September 2024.",

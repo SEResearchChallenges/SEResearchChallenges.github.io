@@ -1183,7 +1183,8 @@
 
                   /* 参考文献：主题分组 */
                   if (item.type === "ref-group") {
-                    bodyHtml += `
+                    if (item.group)
+                      bodyHtml += `
                 <p style="font-weight:700;margin-top:14px;">
                   • ${escapeHtml(item.group)}
                 </p>
